@@ -1,86 +1,132 @@
 import { useState, useEffect } from "react";
-import { actualizarCalificacion, obtenerCalificaciones } from "../services/CalificacionesService";
+import {
+  actualizarCalificacion,
+  obtenerCalificaciones
+} from "../services/CalificacionesService";
+
+import {
+  validarFecha,
+  validarMercado,
+  validarTipoSociedad,
+  validarFormatoFactor,
+  validarSumaFactores
+} from "../services/Validadores";
 
 export default function ModificarCalificacion({ id, onUpdated, onCancel }) {
   const [form, setForm] = useState({
     rut: "",
     nombre: "",
     monto: "",
-    factor: "",
-    fecha: ""
+    fecha: "",
+    tipoSociedad: "",
+    mercado: "",
+    factor8: "",
+    factor9: "",
+    factor10: "",
+    factor11: "",
+    factor12: "",
+    factor13: "",
+    factor14: "",
+    factor15: "",
+    factor16: "",
+    factor17: "",
+    factor18: "",
+    factor19: "",
   });
 
-  // Cargar datos del registro a editar
   useEffect(() => {
     async function cargar() {
       const lista = await obtenerCalificaciones();
       const actual = lista.find(x => x.id === id);
 
-      if (actual) {
-        const { rut, nombre, monto, factor, fecha } = actual;
-
-        setForm({
-          rut,
-          nombre,
-          monto: String(monto),
-          factor: String(factor ?? ""),
-          fecha
-        });
-      }
+      if (actual) setForm(actual);
     }
     cargar();
   }, [id]);
 
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
   async function guardarCambios() {
-    await actualizarCalificacion(id, {
-      rut: form.rut,
-      nombre: form.nombre,
-      monto: parseFloat(form.monto),
-      factor: parseFloat(form.factor || 0),
-      fecha: form.fecha
-    });
+    // 🔎 Validaciones antes de guardar
+
+    if (!validarFecha(form.fecha)) {
+      alert("Fecha inválida. Debe ser DD-MM-AAAA");
+      return;
+    }
+
+    if (!validarTipoSociedad(form.tipoSociedad)) {
+      alert("Tipo de sociedad debe ser A o C");
+      return;
+    }
+
+    if (!validarMercado(form.mercado)) {
+      alert("Mercado debe tener entre 1 y 3 letras");
+      return;
+    }
+
+    for (let i = 8; i <= 19; i++) {
+      const key = `factor${i}`;
+      if (form[key] && !validarFormatoFactor(form[key])) {
+        alert(`El factor ${i} tiene un formato inválido`);
+        return;
+      }
+    }
+
+    if (!validarSumaFactores(form)) {
+      alert("La suma de factores (8 al 19) no debe superar 1");
+      return;
+    }
+
+    // 🔥 Guardamos: se actualiza por RUT según las reglas del negocio
+    await actualizarCalificacion(form.rut, form);
 
     if (onUpdated) onUpdated();
   }
 
   return (
-    <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #aaa" }}>
+    <div style={{ marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}>
       <h3>Modificar Calificación</h3>
 
+      {/* Datos base */}
+      <input name="rut" placeholder="RUT" value={form.rut} onChange={handleChange} />
+      <input name="nombre" placeholder="Nombre" value={form.nombre} onChange={handleChange} />
+      <input name="monto" placeholder="Monto" value={form.monto} onChange={handleChange} />
+      <input name="fecha" placeholder="DD-MM-AAAA" value={form.fecha} onChange={handleChange} />
+
       <input
-        placeholder="RUT"
-        value={form.rut}
-        onChange={e => setForm({ ...form, rut: e.target.value })}
+        name="tipoSociedad"
+        placeholder="Tipo (A/C)"
+        value={form.tipoSociedad}
+        onChange={handleChange}
       />
 
       <input
-        placeholder="Nombre"
-        value={form.nombre}
-        onChange={e => setForm({ ...form, nombre: e.target.value })}
+        name="mercado"
+        placeholder="Mercado"
+        value={form.mercado}
+        onChange={handleChange}
       />
 
-      <input
-        placeholder="Monto"
-        value={form.monto}
-        onChange={e => setForm({ ...form, monto: e.target.value })}
-      />
+      {/* FACTORES */}
+      {[...Array(12)].map((_, idx) => {
+        const n = idx + 8;
+        return (
+          <input
+            key={n}
+            name={`factor${n}`}
+            placeholder={`Factor ${n}`}
+            value={form[`factor${n}`]}
+            onChange={handleChange}
+          />
+        );
+      })}
 
-      <input
-        placeholder="Factor"
-        value={form.factor}
-        onChange={e => setForm({ ...form, factor: e.target.value })}
-      />
-
-      <input
-        type="date"
-        value={form.fecha}
-        onChange={e => setForm({ ...form, fecha: e.target.value })}
-      />
-
-      <button onClick={guardarCambios}>Guardar Cambios</button>
-      <button onClick={onCancel} style={{ marginLeft: "10px" }}>
-        Cancelar
+      <button onClick={guardarCambios} style={{ marginRight: "10px" }}>
+        Guardar cambios
       </button>
+      <button onClick={onCancel}>Cancelar</button>
     </div>
   );
 }
