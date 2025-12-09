@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // VISTAS
+import MantenedorInfoExterna from "../views/MantenedorInfoExterna";
 import IngresoCalificacion from "../views/IngresoCalificacion";
 import ListadoCalificaciones from "../views/ListadoCalificaciones";
 import CargaPorMonto from "../views/CargaPorMonto";
@@ -25,6 +26,9 @@ export default function AppRouter() {
           {/* Cargas masivas */}
           <Route path="/carga-monto" element={<CargaPorMonto />} />
           <Route path="/carga-factor" element={<CargaPorFactor />} />
+
+          {/* Mantenedor de Información Externa*/}
+          <Route path="/info-externa" element={<MantenedorInfoExterna />} />
 
           {/* Si la ruta no existe → volver al menú */}
           <Route path="*" element={<Navigate to="/" />} />
