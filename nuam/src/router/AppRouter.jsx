@@ -13,7 +13,12 @@ import MainLayout from "../components/layout/MainLayout";
 
 export default function AppRouter() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <MainLayout>
         <Routes>
           {/* Menú principal */}

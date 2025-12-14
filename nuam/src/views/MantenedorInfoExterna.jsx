@@ -8,8 +8,6 @@ import {
 
 import ModalCargaMasivaInfoExterna from "../components/modals/ModalCargaMasivaInfoExterna";
 
-// === LISTA REAL DE FACTORES (según Excel de homologación proporcionado) ===
-// Puedes reemplazar estos nombres si tu archivo final cambia.
 const FACTOR_HEADERS = [
   "Ajuste capital",            // F8
   "Renta devengada",           // F9
@@ -69,21 +67,18 @@ export default function MantenedorInfoExterna() {
     ...Object.fromEntries([...Array(30)].map((_, i) => [`factor${i + 8}`, ""])),
   }));
 
-  useEffect(() => {
-    cargar();
-  }, []);
-
   async function cargar() {
     const data = await obtenerInfoExterna(filtro);
     setLista(data);
   }
 
+  useEffect(() => {
+    cargar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function handleFiltro(e) {
     setFiltro({ ...filtro, [e.target.name]: e.target.value });
-  }
-
-  function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   function limpiarFiltros() {
@@ -141,9 +136,7 @@ export default function MantenedorInfoExterna() {
 
       {/* === FILTROS === */}
       <div style={{ marginBottom: "20px" }}>
-        <h3>Filtros</h3>
-
-        <select name="mercado" value={filtro.mercado} onChange={handleFiltro}>
+          <select name="mercado" value={filtro.mercado} onChange={handleFiltro}>
           <option value="">Tipo Mercado</option>
           <option value="ACC">Acciones</option>
           <option value="CFI">CFI</option>
@@ -168,7 +161,6 @@ export default function MantenedorInfoExterna() {
         <button onClick={limpiarFiltros}>Limpiar</button>
       </div>
 
-      {/* === LISTADO === */}
       <h3>Listado</h3>
 
       <div style={{ overflowX: "auto", maxHeight: "420px" }}>
@@ -227,7 +219,6 @@ export default function MantenedorInfoExterna() {
 
       {lista.length === 0 && <p>No hay registros para mostrar.</p>}
 
-      {/* BOTONES BAJO LA GRILLA */}
       <div style={{ marginTop: "15px" }}>
         <button onClick={borrarSeleccionado}>Eliminar</button>
 

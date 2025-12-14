@@ -1,4 +1,4 @@
-export default function ModalCargaPorFactor({ registros, onClose }) {
+export default function ModalCargaPorFactor({ onClose }) {
   return (
     <div style={{ background: "#fff", padding: 20, border: "1px solid #ccc" }}>
       <h3>Preview Carga Masiva por Factor</h3>

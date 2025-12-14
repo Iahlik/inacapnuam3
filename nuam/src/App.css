@@ -308,9 +308,18 @@
   background: #0f2228;
   color: #e6eff4;
   padding: 18px 16px;
-  min-height: 100vh;
+  height: 100vh;
   position: sticky;
   top: 0;
+  overflow-y: auto;
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    position: relative;
+    top: auto;
+    height: 280px;
+  }
 }
 
 .sidebar-nav {
