@@ -389,6 +389,14 @@
     max-height: none;
   }
 }
+/* Ocultar columnas Fuente y Σ F8-F37 */
+.table th:nth-child(10),
+.table td:nth-child(10),
+.table th:nth-child(11),
+.table td:nth-child(11) {
+  display: none;
+}
+
 
 
 @media (max-width: 960px) {
